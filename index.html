@@ -21,6 +21,7 @@
       display: flex;
       padding: 20px;
       gap: 20px;
+      flex-wrap: wrap;
     }
     .panel {
       flex: 1;
@@ -28,6 +29,7 @@
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-width: 45%;
     }
     .panel h2 {
       text-align: center;
@@ -130,7 +132,7 @@
         }
       });
 
-    // Render source graphs
+    // Render Source Graphs
     function renderSourceGraphs(channelId) {
       const container = document.getElementById('sourceGraphs');
       container.innerHTML = '';
@@ -143,15 +145,23 @@
 
       const wrap = document.createElement('div');
       wrap.className = 'iframe-container';
+
       sourceData[channelId].forEach(url => {
         const iframe = document.createElement('iframe');
         iframe.src = url;
+        iframe.setAttribute('data-src', url);
         wrap.appendChild(iframe);
       });
       container.appendChild(wrap);
+
+      setInterval(() => {
+        container.querySelectorAll('iframe').forEach(iframe => {
+          iframe.src = iframe.getAttribute('data-src');
+        });
+      }, 60000);
     }
 
-    // Render Amagi/M2A graphs
+    // Render Amagi/M2A Graphs
     function renderAmagiGraphs(channelId) {
       const container = document.getElementById('amagiGraphs');
       container.innerHTML = '';
@@ -165,13 +175,21 @@
 
         const wrap = document.createElement('div');
         wrap.className = 'iframe-container';
+
         amagiData[channelId][section].forEach(url => {
           const iframe = document.createElement('iframe');
           iframe.src = url;
+          iframe.setAttribute('data-src', url);
           wrap.appendChild(iframe);
         });
         container.appendChild(wrap);
       }
+
+      setInterval(() => {
+        container.querySelectorAll('iframe').forEach(iframe => {
+          iframe.src = iframe.getAttribute('data-src');
+        });
+      }, 60000);
     }
   </script>
 </body>
