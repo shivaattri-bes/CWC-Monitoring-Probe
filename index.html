@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Channel Graph Monitor</title>
+  <meta charset="UTF-8">
+  <title>Probe Monitoring Tool</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 0;
-      background: #f2f2f2;
     }
     h1 {
       text-align: center;
-      padding: 20px;
       background: #2c3e50;
       color: white;
+      padding: 20px;
       margin: 0;
     }
     #main {
@@ -27,8 +27,8 @@
       flex: 1;
       background: white;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     .panel h2 {
       text-align: center;
@@ -37,22 +37,21 @@
     select {
       width: 100%;
       padding: 10px;
-      margin: 10px 0 20px 0;
       font-size: 16px;
+      margin-bottom: 20px;
     }
     .section-title {
-      text-align: center;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
-      margin-top: 30px;
+      text-align: center;
       color: #2c3e50;
+      margin: 30px 0 10px;
     }
     .iframe-container {
       display: flex;
       justify-content: center;
-      gap: 20px;
       flex-wrap: wrap;
-      margin-bottom: 40px;
+      gap: 20px;
     }
     iframe {
       width: 861px;
@@ -63,10 +62,9 @@
 </head>
 <body>
 
-<h1>Channel Graph Monitoring Dashboard</h1>
+<h1>Channel Graph Monitoring Tool</h1>
 
 <div id="main">
-  <!-- Left Panel: Source -->
   <div class="panel">
     <h2>Source Panel</h2>
     <select id="sourceDropdown" onchange="renderSourceGraphs(this.value)">
@@ -75,7 +73,6 @@
     <div id="sourceGraphs"></div>
   </div>
 
-  <!-- Right Panel: Amagi / M2A -->
   <div class="panel">
     <h2>Amagi / M2A Panel</h2>
     <select id="amagiDropdown" onchange="renderAmagiGraphs(this.value)">
@@ -86,18 +83,17 @@
 </div>
 
 <script>
-  // ✅ RAW CSV URLs for GitHub-hosted files
-  const SOURCE_CSV_URL = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/a9659aaff986ef7049d38e729974d2e71734c6e3/source.csv';
-  const AMAGI_CSV_URL  = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/a9659aaff986ef7049d38e729974d2e71734c6e3/Channel_config_list.csv';
+  const SOURCE_CSV_URL = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/main/source.csv';
+  const AMAGI_CSV_URL  = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/main/Channel_config_list.csv';
 
   const sourceData = {};
   const amagiData  = {};
 
-  // — Load and parse source.csv —
+  // Load source.csv
   fetch(SOURCE_CSV_URL)
     .then(res => res.text())
     .then(csv => {
-      const lines = csv.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const lines = csv.split('\n').map(l => l.trim()).filter(Boolean);
       let currentChannel = '';
       for (let line of lines) {
         if (line.startsWith('CH')) {
@@ -105,16 +101,17 @@
           sourceData[currentChannel] = [];
           document.getElementById('sourceDropdown').innerHTML += `<option value="${currentChannel}">${currentChannel}</option>`;
         } else if (line.startsWith('http')) {
-          sourceData[currentChannel].push(line.split(' width=')[0]);
+          const cleanUrl = line.split(' width=')[0];
+          sourceData[currentChannel].push(cleanUrl);
         }
       }
     });
 
-  // — Load and parse Channel_config_list.csv —
+  // Load Channel_config_list.csv
   fetch(AMAGI_CSV_URL)
     .then(res => res.text())
     .then(csv => {
-      const lines = csv.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const lines = csv.split('\n').map(l => l.trim()).filter(Boolean);
       let currentChannel = '';
       let currentSection = '';
       for (let line of lines) {
@@ -126,52 +123,55 @@
           currentSection = line;
           amagiData[currentChannel][currentSection] = [];
         } else if (line.startsWith('http')) {
-          amagiData[currentChannel][currentSection].push(line.split(' width=')[0]);
+          const cleanUrl = line.split(' width=')[0];
+          amagiData[currentChannel][currentSection].push(cleanUrl);
         }
       }
     });
 
-  // — Render Source Graphs (Left Panel) —
-  function renderSourceGraphs(channelId) {
+  function renderSourceGraphs(channel) {
     const container = document.getElementById('sourceGraphs');
     container.innerHTML = '';
-    if (!sourceData[channelId]) return;
+    if (!sourceData[channel]) return;
 
-    const title = document.createElement('div');
-    title.className = 'section-title';
-    title.textContent = 'Source';
-    container.appendChild(title);
+    const section = document.createElement('div');
+    section.className = 'section-title';
+    section.textContent = 'Source';
+    container.appendChild(section);
 
-    const wrap = document.createElement('div');
-    wrap.className = 'iframe-container';
-    sourceData[channelId].forEach(url => {
+    const frameWrap = document.createElement('div');
+    frameWrap.className = 'iframe-container';
+
+    sourceData[channel].forEach(url => {
       const ifr = document.createElement('iframe');
       ifr.src = url;
-      wrap.appendChild(ifr);
+      frameWrap.appendChild(ifr);
     });
-    container.appendChild(wrap);
+
+    container.appendChild(frameWrap);
   }
 
-  // — Render Amagi/M2A Graphs (Right Panel) —
-  function renderAmagiGraphs(channelId) {
+  function renderAmagiGraphs(channel) {
     const container = document.getElementById('amagiGraphs');
     container.innerHTML = '';
-    if (!amagiData[channelId]) return;
+    if (!amagiData[channel]) return;
 
-    for (let section in amagiData[channelId]) {
-      const title = document.createElement('div');
-      title.className = 'section-title';
-      title.textContent = section;
-      container.appendChild(title);
+    for (let section in amagiData[channel]) {
+      const sectionTitle = document.createElement('div');
+      sectionTitle.className = 'section-title';
+      sectionTitle.textContent = section;
+      container.appendChild(sectionTitle);
 
-      const wrap = document.createElement('div');
-      wrap.className = 'iframe-container';
-      amagiData[channelId][section].forEach(url => {
+      const frameWrap = document.createElement('div');
+      frameWrap.className = 'iframe-container';
+
+      amagiData[channel][section].forEach(url => {
         const ifr = document.createElement('iframe');
         ifr.src = url;
-        wrap.appendChild(ifr);
+        frameWrap.appendChild(ifr);
       });
-      container.appendChild(wrap);
+
+      container.appendChild(frameWrap);
     }
   }
 </script>
