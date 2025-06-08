@@ -1,0 +1,40 @@
+CH01
+Amagi Input
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_ch27_A_130&?&detached=1 width=861 height=271
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch27_B_130&?&detached=1 width=861 height=271
+
+Amagi Playout Output
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch27_PRI_130&?&detached=1 width=861 height=271
+http://10.111.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_Ch27_SEC_130&?&detached=1 width=861 height=271
+
+M2A Handsoff
+http://10.11.233.144/probe/core/mdiChannelDoc?Channelname=INX_DAZN-M2A-PRI_CH27&?&detached=1 width=861 height=271
+http://10.111.233.144/probe/core/mdiChannelDoc?Channelname=CHE_DAZN-M2A-SEC_CH27&?&detached=1 width=861 height=271
+
+
+CH02
+Amagi Input
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_ch28_A_130&?&detached=1 width=861 height=271
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch28_B_130&?&detached=1 width=861 height=271
+
+Amagi Playout Output
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch28_PRI_130&?&detached=1 width=861 height=271
+http://10.111.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_Ch28_SEC_130&?&detached=1 width=861 height=271
+
+M2A Handsoff
+http://10.11.233.144/probe/core/mdiChannelDoc?Channelname=INX_DAZN-M2A-PRI_CH28&?&detached=1 width=861 height=271
+http://10.111.233.144/probe/core/mdiChannelDoc?Channelname=CHE_DAZN-M2A-SEC_CH28&?&detached=1 width=861 height=271
+
+
+CH12
+Amagi Input
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_ch28_A_130&?&detached=1 width=861 height=271
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch28_B_130&?&detached=1 width=861 height=271
+
+Amagi Playout Output
+http://10.11.203.66/probe/core/mdiChannelDoc?Channelname=INX_Amagi_Ch28_PRI_130&?&detached=1 width=861 height=271
+http://10.111.203.66/probe/core/mdiChannelDoc?Channelname=CHE_Amagi_Ch28_SEC_130&?&detached=1 width=861 height=271
+
+M2A Handsoff
+http://10.11.233.144/probe/core/mdiChannelDoc?Channelname=INX_DAZN-M2A-PRI_CH28&?&detached=1 width=861 height=271
+http://10.111.233.144/probe/core/mdiChannelDoc?Channelname=CHE_DAZN-M2A-SEC_CH28&?&detached=1 width=861 height=271
