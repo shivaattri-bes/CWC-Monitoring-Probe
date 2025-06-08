@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Channel Graph Monitor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f2f2f2;
+    }
+    h1 {
+      text-align: center;
+      padding: 20px;
+      background: #2c3e50;
+      color: white;
+      margin: 0;
+    }
+    #main {
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+    .panel {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .panel h2 {
+      text-align: center;
+      color: #34495e;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px 0;
+      font-size: 16px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 30px;
+      color: #2c3e50;
+    }
+    .iframe-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    iframe {
+      width: 861px;
+      height: 271px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Channel Graph Monitoring Dashboard</h1>
+
+<div id="main">
+  <!-- Left Panel: Source -->
+  <div class="panel">
+    <h2>Source Panel</h2>
+    <select id="sourceDropdown" onchange="renderSourceGraphs(this.value)">
+      <option value="">-- Select Channel (Source) --</option>
+    </select>
+    <div id="sourceGraphs"></div>
+  </div>
+
+  <!-- Right Panel: Amagi / M2A -->
+  <div class="panel">
+    <h2>Amagi / M2A Panel</h2>
+    <select id="amagiDropdown" onchange="renderAmagiGraphs(this.value)">
+      <option value="">-- Select Channel (Amagi/M2A) --</option>
+    </select>
+    <div id="amagiGraphs"></div>
+  </div>
+</div>
+
+<script>
+  // ✅ RAW CSV URLs for GitHub-hosted files
+  const SOURCE_CSV_URL = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/a9659aaff986ef7049d38e729974d2e71734c6e3/source.csv';
+  const AMAGI_CSV_URL  = 'https://raw.githubusercontent.com/shivaattri-bes/CWC-Monitoring-Probe/a9659aaff986ef7049d38e729974d2e71734c6e3/Channel_config_list.csv';
+
+  const sourceData = {};
+  const amagiData  = {};
+
+  // — Load and parse source.csv —
+  fetch(SOURCE_CSV_URL)
+    .then(res => res.text())
+    .then(csv => {
+      const lines = csv.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let currentChannel = '';
+      for (let line of lines) {
+        if (line.startsWith('CH')) {
+          currentChannel = line;
+          sourceData[currentChannel] = [];
+          document.getElementById('sourceDropdown').innerHTML += `<option value="${currentChannel}">${currentChannel}</option>`;
+        } else if (line.startsWith('http')) {
+          sourceData[currentChannel].push(line.split(' width=')[0]);
+        }
+      }
+    });
+
+  // — Load and parse Channel_config_list.csv —
+  fetch(AMAGI_CSV_URL)
+    .then(res => res.text())
+    .then(csv => {
+      const lines = csv.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let currentChannel = '';
+      let currentSection = '';
+      for (let line of lines) {
+        if (line.startsWith('CH')) {
+          currentChannel = line;
+          amagiData[currentChannel] = {};
+          document.getElementById('amagiDropdown').innerHTML += `<option value="${currentChannel}">${currentChannel}</option>`;
+        } else if (["Amagi Input", "Amagi Playout Output", "M2A Handsoff"].includes(line)) {
+          currentSection = line;
+          amagiData[currentChannel][currentSection] = [];
+        } else if (line.startsWith('http')) {
+          amagiData[currentChannel][currentSection].push(line.split(' width=')[0]);
+        }
+      }
+    });
+
+  // — Render Source Graphs (Left Panel) —
+  function renderSourceGraphs(channelId) {
+    const container = document.getElementById('sourceGraphs');
+    container.innerHTML = '';
+    if (!sourceData[channelId]) return;
+
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.textContent = 'Source';
+    container.appendChild(title);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'iframe-container';
+    sourceData[channelId].forEach(url => {
+      const ifr = document.createElement('iframe');
+      ifr.src = url;
+      wrap.appendChild(ifr);
+    });
+    container.appendChild(wrap);
+  }
+
+  // — Render Amagi/M2A Graphs (Right Panel) —
+  function renderAmagiGraphs(channelId) {
+    const container = document.getElementById('amagiGraphs');
+    container.innerHTML = '';
+    if (!amagiData[channelId]) return;
+
+    for (let section in amagiData[channelId]) {
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = section;
+      container.appendChild(title);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'iframe-container';
+      amagiData[channelId][section].forEach(url => {
+        const ifr = document.createElement('iframe');
+        ifr.src = url;
+        wrap.appendChild(ifr);
+      });
+      container.appendChild(wrap);
+    }
+  }
+</script>
+
+</body>
+</html>
+ 
